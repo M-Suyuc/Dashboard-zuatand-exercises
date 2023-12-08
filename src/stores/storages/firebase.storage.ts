@@ -9,7 +9,7 @@ const sessionAPI: StateStorage = {
       const data = await fetch(`${firebaseUrl}/${name}.json`).then((res) =>
         res.json()
       )
-      console.log(data)
+      // console.log(data)
       return JSON.stringify(data)
     } catch (error) {
       console.log(error)
@@ -22,12 +22,12 @@ const sessionAPI: StateStorage = {
       method: 'PUT',
       body: value
     }).then((res) => res.json())
-    console.log(data)
+    // console.log(data)
   },
 
   removeItem: function (name: string): void | Promise<void> {
     // throw new Error('Function not implemented.')
-    console.log('removeItem', name)
+    // console.log('removeItem', name)
   }
 }
 
