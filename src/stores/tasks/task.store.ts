@@ -1,6 +1,8 @@
 import { StateCreator, create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { devtools, persist } from 'zustand/middleware'
 import type { Task, TaskStatus } from '../../interfaces'
+// import { produce } from 'immer'
+import { immer } from 'zustand/middleware/immer'
 
 interface TaskState {
   tasks: Record<string, Task> // tasks: { [key: string]: Task }
@@ -16,7 +18,11 @@ interface TaskState {
   onTaskDrop: (status: TaskStatus) => void
 }
 
-export const storeApi: StateCreator<TaskState> = (set, get, store) => ({
+export const storeApi: StateCreator<TaskState, [['zustand/immer', never]]> = (
+  set,
+  get,
+  store
+) => ({
   tasks: {
     'ABC-1': { id: 'ABC-1', title: 'Task 1', status: 'open' },
     'ABC-2': { id: 'ABC-2', title: 'Task 2', status: 'in-progress' },
@@ -32,12 +38,23 @@ export const storeApi: StateCreator<TaskState> = (set, get, store) => ({
 
   addTask: (title: string, status: TaskStatus) => {
     const newTask = { id: crypto.randomUUID(), title, status }
-    set((state) => ({
-      tasks: {
-        ...state.tasks,
-        [newTask.id]: newTask
-      }
-    }))
+    // 👇🏻 1ra forma: usando el spredd operator para persistir el estado
+    // set((state) => ({
+    //   tasks: {
+    //     ...state.tasks,
+    //     [newTask.id]: newTask
+    //   }
+
+    // 👇🏻 2da forma: utilizando el paquete de immer
+    // set(
+    //   produce((state: TaskState) => {
+    //     state.tasks[newTask.id] = newTask
+    //   })
+    // )
+    // 👇🏻 3ra forma: utilizando el middleware de immer
+    set((state) => {
+      state.tasks[newTask.id] = newTask
+    })
   },
 
   draggingTaskId: undefined,
@@ -51,14 +68,28 @@ export const storeApi: StateCreator<TaskState> = (set, get, store) => ({
   },
 
   changeTaskStatus: (taskId: string, status: TaskStatus) => {
-    const task = get().tasks[taskId]
+    // 👇🏻 1ra forma: usando el spredd operator para persistir el estado
+    // const task = get().tasks[taskId]
+    // task.status = status
+
+    // set((state) => ({
+    //   tasks: {
+    //     ...state.tasks,
+    //     [taskId]: task
+    //   }
+    // }))
+
+    // 👇🏻 3ra forma: utilizando el middleware de immer
+    const task = { ...get().tasks[taskId] }
     task.status = status
-    set((state) => ({
-      tasks: {
-        ...state.tasks,
-        [taskId]: task
+
+    set((state) => {
+      state.tasks[taskId] = {
+        ...task
+        // ...state.tasks[taskId],
+        // status
       }
-    }))
+    })
   },
 
   onTaskDrop: (status: TaskStatus) => {
@@ -69,4 +100,6 @@ export const storeApi: StateCreator<TaskState> = (set, get, store) => ({
   }
 })
 
-export const useTaskStore = create<TaskState>()(devtools(storeApi))
+export const useTaskStore = create<TaskState>()(
+  devtools(persist(immer(storeApi), { name: 'tasks-storage' }))
+)
