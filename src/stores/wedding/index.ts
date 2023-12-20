@@ -1,9 +1,15 @@
 import { create } from 'zustand'
-import { PersonSlice, createPersonSlice } from './person.slice'
 import { devtools, persist } from 'zustand/middleware'
-import { GuestSlice, createGuestSlice } from './guest.slice'
 
-type ShareState = PersonSlice & GuestSlice
+import { PersonSlice, createPersonSlice } from './person.slice'
+import { GuestSlice, createGuestSlice } from './guest.slice'
+import { DateSlice, createDateSlice } from './date.slice'
+import {
+  ConfirmationSlice,
+  createConfirmationSlice
+} from './confirmation.slice'
+
+type ShareState = PersonSlice & GuestSlice & DateSlice & ConfirmationSlice
 
 export const useWeddingBoundStore = create<ShareState>()(
   devtools(
@@ -11,7 +17,9 @@ export const useWeddingBoundStore = create<ShareState>()(
       // (set,get,storeAPI)=>({}) es igual a (..a)=>({})
       (...a) => ({
         ...createPersonSlice(...a),
-        ...createGuestSlice(...a)
+        ...createGuestSlice(...a),
+        ...createDateSlice(...a),
+        ...createConfirmationSlice(...a)
       }),
       { name: 'wedding-state' }
     )
