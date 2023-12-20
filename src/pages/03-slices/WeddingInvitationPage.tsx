@@ -3,12 +3,22 @@ import { useWeddingBoundStore } from '../../stores/wedding'
 
 export const WeddingInvitationPage = () => {
   const firstName = useWeddingBoundStore((state) => state.firstName)
-  const lastName = useWeddingBoundStore((state) => state.lastName)
-  const guestCount = useWeddingBoundStore((state) => state.guestCount)
-
   const setFirstName = useWeddingBoundStore((state) => state.setFirstName)
+
+  const lastName = useWeddingBoundStore((state) => state.lastName)
   const setLastName = useWeddingBoundStore((state) => state.setLastName)
+
+  const guestCount = useWeddingBoundStore((state) => state.guestCount)
   const setGuestCount = useWeddingBoundStore((state) => state.setGuestCount)
+
+  const date = useWeddingBoundStore((state) => state.date)
+  const setDate = useWeddingBoundStore((state) => state.setDate)
+
+  const hour = useWeddingBoundStore((state) => state.hour)
+  const setHour = useWeddingBoundStore((state) => state.setHour)
+
+  // const confirmation = useWeddingBoundStore((state) => state.confirmation)
+  const setConfirmation = useWeddingBoundStore((state) => state.setConfirmation)
 
   return (
     <>
@@ -74,7 +84,13 @@ export const WeddingInvitationPage = () => {
                   <label className='mb-3 block text-base font-medium text-[#07074D]'>
                     Fecha de evento
                   </label>
-                  <input type='date' name='eventDate' id='eventDate' />
+                  <input
+                    type='date'
+                    name='eventDate'
+                    id='eventDate'
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
                 </div>
               </div>
               <div className='w-full px-3 sm:w-1/2'>
@@ -82,7 +98,13 @@ export const WeddingInvitationPage = () => {
                   <label className='mb-3 block text-base font-medium text-[#07074D]'>
                     Hora del evento
                   </label>
-                  <input type='time' name='eventTime' id='eventTime' />
+                  <input
+                    type='time'
+                    name='eventTime'
+                    id='eventTime'
+                    value={hour}
+                    onChange={(e) => setHour(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -98,6 +120,8 @@ export const WeddingInvitationPage = () => {
                     name='isComing'
                     id='radioButton1'
                     className='h-5 w-5'
+                    // checked={confirmation ? true : false}
+                    onClick={() => setConfirmation(true)}
                   />
                   <label className='pl-3 text-base font-medium text-[#07074D]'>
                     Si
@@ -109,6 +133,8 @@ export const WeddingInvitationPage = () => {
                     name='isComing'
                     id='radioButton2'
                     className='h-5 w-5'
+                    // checked={confirmation ? true : false}
+                    onClick={() => setConfirmation(false)}
                   />
                   <label className='pl-3 text-base font-medium text-[#07074D]'>
                     No
